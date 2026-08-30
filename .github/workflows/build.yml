@@ -23,20 +23,25 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential libsqlite3-dev sqlite3 bzip2 libbz2-dev zlib1g-dev libssl-dev openssl libgdbm-dev libgdbm-compat-dev liblzma-dev libreadline-dev libffi-dev uuid-dev git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
 
-      - name: Force Python 3.10 as Default System Python
+      - name: Hardlink System Python to 3.10
         run: |
-          sudo update-alternatives --install /usr/bin/python3 python3 $(which python3.10) 1
-          sudo update-alternatives --set python3 $(which python3.10)
-          python3 --version
+          sudo rm -f /usr/bin/python3 /usr/bin/python
+          sudo ln -s $(which python3.10) /usr/bin/python3
+          sudo ln -s $(which python3.10) /usr/bin/python
 
       - name: Install Buildozer and Cython
         run: |
           python3 -m pip install --upgrade pip setuptools
           python3 -m pip install "cython<3.0.0" buildozer
 
-      - name: Build APK with Buildozer
+      - name: Build APK with Explicit Host Python
         run: |
-          yes | buildozer -v android debug
+          export PYTHON="/usr/bin/python3"
+          export P4A_PYTHON="/usr/bin/python3"
+          yes | python3 -m buildozer -v android debug
+        env:
+          PYTHON: /usr/bin/python3
+          P4A_PYTHON: /usr/bin/python3
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
