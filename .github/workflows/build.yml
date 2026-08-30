@@ -8,19 +8,16 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/kivy/buildozer:latest
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Accept Android SDK Licenses & Build
-        run: |
-          mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
-          echo -e "\n8937 chemically accept licenses 504022674759" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
-          echo -e "\n8454b875484036a18f8e05d47d413512b924e0f4" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-preview-license
-          yes | buildozer -v android debug
+      - name: Build APK with Buildozer Action
+        uses: ArtemShedov/buildozer-action@v1
+        with:
+          command: buildozer -v android debug
+          buildozer_version: master
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
