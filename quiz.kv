@@ -1,0 +1,256 @@
+# quiz.kv
+
+<SmoothButton@Button>:
+    background_normal: ''
+    background_color: (0.36, 0.14, 1, 1)  # Premium Purple Accent
+    bold: True
+    font_size: '20sp' # फॉन्ट साइज बड़ा किया
+    size_hint_y: None
+    height: '60dp' # बटन की हाइट बड़ी की
+
+# ----------------------------------------------------
+# SCREENS LAYOUT
+# ----------------------------------------------------
+<SplashScreen>:
+    canvas.before:
+        Color:
+            rgba: (0.04, 0.05, 0.14, 1)
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 40
+        spacing: 20
+        Widget:
+            size_hint_y: 0.15
+        Image:
+            source: 'logo.png'
+            size_hint: (None, None)
+            size: (260, 260)
+            pos_hint: {'center_x': 0.5}
+        Label:
+            text: "QUIZ NOVA"
+            font_size: '36sp'
+            bold: True
+        Label:
+            text: "Exploring the Universe of Knowledge"
+            font_size: '14sp'
+            color: (0.5, 0.5, 0.7, 1)
+        Widget:
+            size_hint_y: 0.2
+
+<HomeScreen>:
+    canvas.before:
+        Color:
+            rgba: (0.04, 0.05, 0.14, 1)
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 20
+        spacing: 20
+        BoxLayout:
+            size_hint_y: 0.08
+            Label:
+                text: "🪙 100"
+                font_size: '20sp'
+                bold: True
+                color: (1, 0.84, 0, 1)
+            Label:
+                text: "✨ XP: 125"
+                font_size: '20sp'
+                bold: True
+                color: (0.6, 0.4, 1, 1)
+        Image:
+            source: 'logo.png'
+            size_hint_y: 0.4
+            pos_hint: {'center_x': 0.5}
+        Label:
+            text: "Welcome, Owesh!"
+            font_size: '24sp'
+            bold: True
+        SmoothButton:
+            text: "START QUIZ"
+            size_hint_y: None
+            height: '65dp'
+            pos_hint: {'center_x': 0.5}
+            on_release: root.manager.current = 'level_select'
+        Widget:
+            size_hint_y: 0.1
+
+<LevelSelectScreen>:
+    canvas.before:
+        Color:
+            rgba: (0.04, 0.05, 0.14, 1)
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 20
+        spacing: 15
+        
+        BoxLayout:
+            size_hint_y: 0.1
+            orientation: 'horizontal'
+            Button:
+                text: "⬅"
+                size_hint_x: 0.2
+                font_size: '28sp'
+                background_color: (0,0,0,0)
+                on_release: root.manager.current = 'home'
+            Label:
+                text: "SELECT LEVEL"
+                font_size: '24sp'
+                bold: True
+                halign: 'center'
+                
+        ScrollView:
+            do_scroll_x: False
+            do_scroll_y: True
+            GridLayout:
+                id: grid_levels
+                cols: 3
+                spacing: 20  # स्पेस थोड़ा बढ़ा दिया
+                size_hint_y: None
+                height: self.minimum_height
+                row_default_height: '80dp'  # लेवल बटन्स की हाइट बड़ी की 🚀
+                row_force_default: True
+                padding: [10, 10, 10, 10]
+
+<QuizScreen>:
+    canvas.before:
+        Color:
+            rgba: (0.04, 0.05, 0.14, 1)
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 25
+        spacing: 20
+        
+        # Upper Stats Panel
+        BoxLayout:
+            size_hint_y: 0.08
+            Label:
+                text: "Question: " + root.question_counter_text
+                font_size: '20sp'
+                bold: True
+                halign: 'left'
+            Label:
+                text: "⏱️ " + str(root.timer_val) + "s"
+                font_size: '22sp'
+                bold: True
+                color: (1, 0.3, 0.3, 1)
+                halign: 'right'
+                
+        # Premium Question Box Card
+        BoxLayout:
+            size_hint_y: 0.32
+            canvas.before:
+                Color:
+                    rgba: (0.09, 0.11, 0.27, 1)
+                RoundedRectangle:
+                    size: self.size
+                    pos: self.pos
+                    radius: [25]
+            padding: 20
+            Label:
+                text: root.question_text
+                font_size: '22sp'
+                bold: True
+                text_size: self.size
+                halign: 'center'
+                valign: 'middle'
+
+        # 4 Responsive Quiz Option Buttons Area
+        BoxLayout:
+            id: options_box
+            orientation: 'vertical'
+            size_hint_y: 0.55
+            spacing: 15 # ऑप्शंस के बीच गैप बढ़ाया
+            
+            SmoothButton:
+                id: btn_opt0
+                text: root.options[0]
+                on_release: root.check_answer(self)
+            SmoothButton:
+                id: btn_opt1
+                text: root.options[1]
+                on_release: root.check_answer(self)
+            SmoothButton:
+                id: btn_opt2
+                text: root.options[2]
+                on_release: root.check_answer(self)
+            SmoothButton:
+                id: btn_opt3
+                text: root.options[3]
+                on_release: root.check_answer(self)
+
+<ResultScreen>:
+    canvas.before:
+        Color:
+            rgba: (0.04, 0.05, 0.14, 1)
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 30
+        spacing: 20
+        alignment: 'center'
+        
+        Widget:
+            size_hint_y: 0.05
+        Label:
+            text: "🏆 LEVEL COMPLETE 🏆"
+            font_size: '28sp'
+            bold: True
+            color: (1, 0.84, 0, 1)
+        Label:
+            text: root.msg_text
+            font_size: '22sp'
+            bold: True
+            color: (0.4, 1, 0.4, 1)
+        Label:
+            text: root.stars_text
+            font_size: '45sp'
+        Label:
+            text: root.score_text
+            font_size: '22sp'
+        
+        BoxLayout:
+            size_hint_y: 0.1
+            Label:
+                text: root.coins_text
+                font_size: '22sp'
+                bold: True
+                color: (1, 0.84, 0, 1)
+            Label:
+                text: root.xp_text
+                font_size: '22sp'
+                bold: True
+                color: (0.6, 0.4, 1, 1)
+                
+        Widget:
+            size_hint_y: 0.05
+            
+        SmoothButton:
+            text: "NEXT LEVEL"
+            background_color: (0, 0.7, 0.3, 1)
+            on_release: 
+                root.manager.get_screen('quiz').load_level(root.current_level + 1)
+                root.manager.current = 'quiz'
+        SmoothButton:
+            text: "PLAY AGAIN"
+            background_color: (0.36, 0.14, 1, 1)
+            on_release: 
+                root.manager.get_screen('quiz').load_level(root.current_level)
+                root.manager.current = 'quiz'
+        SmoothButton:
+            text: "MAIN MENU"
+            background_color: (0.13, 0.16, 0.36, 1)
+            on_release: root.manager.current = 'home'
