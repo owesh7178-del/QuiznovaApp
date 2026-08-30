@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Checkout Code
@@ -17,31 +17,25 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
+          cache: 'pip'
 
       - name: Install System Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential libsqlite3-dev sqlite3 bzip2 libbz2-dev zlib1g-dev libssl-dev openssl libgdbm-dev libgdbm-compat-dev liblzma-dev libreadline-dev libffi-dev uuid-dev git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
 
-      - name: Hardlink System Python to 3.10
+      - name: Force Environment Paths & Install Tools
         run: |
-          sudo rm -f /usr/bin/python3 /usr/bin/python
-          sudo ln -s $(which python3.10) /usr/bin/python3
-          sudo ln -s $(which python3.10) /usr/bin/python
+          python -m pip install --upgrade pip setuptools
+          python -m pip install "cython<3.0.0" buildozer
+          echo "$(python -c 'import sys; print(sys.prefix)')/bin" >> $GITHUB_PATH
 
-      - name: Install Buildozer and Cython
+      - name: Build APK with Buildozer
         run: |
-          python3 -m pip install --upgrade pip setuptools
-          python3 -m pip install "cython<3.0.0" buildozer
-
-      - name: Build APK with Explicit Host Python
-        run: |
-          export PYTHON="/usr/bin/python3"
-          export P4A_PYTHON="/usr/bin/python3"
-          yes | python3 -m buildozer -v android debug
+          yes | buildozer -v android debug
         env:
-          PYTHON: /usr/bin/python3
-          P4A_PYTHON: /usr/bin/python3
+          PYTHON: python3
+          P4A_RELEASE_KEY: ""
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
